@@ -1,0 +1,8 @@
+.prettierrc
+
+# Locks files
+pnpm-lock.yaml
+skills-lock.json
+
+# Ignore files
+.agents

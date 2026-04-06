@@ -166,9 +166,9 @@ Successful responses:
 
 ```json
 {
-  "statusCode": 200,
-  "message": "OK",
-  "data": {}
+    "statusCode": 200,
+    "message": "OK",
+    "data": {}
 }
 ```
 
@@ -176,11 +176,9 @@ Validation failures:
 
 ```json
 {
-  "statusCode": 422,
-  "message": "Validation Failed",
-  "data": [
-    { "field": "fieldName", "message": "error message" }
-  ]
+    "statusCode": 422,
+    "message": "Validation Failed",
+    "data": [{ "field": "fieldName", "message": "error message" }]
 }
 ```
 
@@ -188,10 +186,10 @@ Application/database errors:
 
 ```json
 {
-  "statusCode": 400,
-  "message": "Error message",
-  "errorCode": 1006,
-  "data": null
+    "statusCode": 400,
+    "message": "Error message",
+    "errorCode": 1006,
+    "data": null
 }
 ```
 

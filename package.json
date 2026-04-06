@@ -1,17 +1,18 @@
 {
     "name": "be-worker-template",
+    "version": "0.0.0",
     "description": "Cloudflare Worker for backend API",
     "type": "module",
     "scripts": {
         "dev": "wrangler dev",
+        "test": "vitest",
         "deploy": "wrangler deploy --minify",
         "cf-typegen": "wrangler types --env-interface CloudflareBindings",
         "db:generate": "drizzle-kit generate",
         "db:migrate": "drizzle-kit migrate",
         "db:studio": "drizzle-kit studio",
-        "commitlint": "commitlint --edit",
         "format": "prettier --write .",
-        "prepare": "husky"
+        "prepare": "simple-git-hooks"
     },
     "dependencies": {
         "@hono/mcp": "^0.2.3",
@@ -26,17 +27,32 @@
         "zod": "^4.3.6"
     },
     "devDependencies": {
+        "@cloudflare/vitest-pool-workers": "^0.14.1",
         "@commitlint/config-conventional": "^20.4.1",
         "@types/node": "^25.2.3",
         "@types/pg": "^8",
         "commitlint": "^20.4.1",
         "dotenv": "^17.3.1",
         "drizzle-kit": "^0.31.9",
-        "husky": "^9.1.7",
         "jsonc-parser": "^3.3.1",
-        "postgres": "^3.4.8",
         "prettier": "^3.8.1",
+        "simple-git-hooks": "^2.13.1",
+        "vitest": "^4.1.2",
         "wrangler": "^4.65.0"
     },
-    "packageManager": "yarn@4.12.0"
+    "commitlint": {
+        "extends": [
+            "@commitlint/config-conventional"
+        ]
+    },
+    "simple-git-hooks": {
+        "pre-commit": "pnpm format",
+        "commit-msg": "pnpm commitlint --edit $1"
+    },
+    "packageManager": "pnpm@10.33.0",
+    "pnpm": {
+        "onlyBuiltDependencies": [
+            "simple-git-hooks"
+        ]
+    }
 }
