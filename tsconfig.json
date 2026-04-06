@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "strict": true,
+        "skipLibCheck": true,
+        "lib": ["ESNext"],
+        "jsx": "react-jsx",
+        "jsxImportSource": "hono/jsx",
+        "types": ["./worker-configuration.d.ts", "node"],
+        "paths": {
+            "@": ["./src"],
+            "@/*": ["./src/*"],
+            "@core": ["./src/core"],
+            "@core/*": ["./src/core/*"],
+            "@db": ["./src/db"],
+            "@db/*": ["./src/db/*"],
+            "@utils": ["./src/utils"],
+            "@utils/*": ["./src/utils/*"],
+            "@modules": ["./src/modules"],
+            "@modules/*": ["./src/modules/*"]
+        }
+    }
+}

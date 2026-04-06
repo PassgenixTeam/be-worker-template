@@ -1,0 +1,56 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "be-worker-template",
+    "main": "src/index.ts",
+    "compatibility_date": "2025-09-27",
+    "dev": {
+        "port": 8787,
+    },
+    "observability": {
+        "enabled": true,
+    },
+    "compatibility_flags": ["nodejs_compat"],
+    /**
+     * Smart Placement
+     * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
+     */
+    // "placement": {  "mode": "smart" }
+    /**
+     * Bindings
+     * Bindings allow your Worker to interact with resources on the Cloudflare Developer Platform, including
+     * databases, object storage, AI inference, real-time communication and more.
+     * https://developers.cloudflare.com/workers/runtime-apis/bindings/
+     */
+    /**
+     * Environment Variables
+     * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables
+     * Note: Use secrets to store sensitive data.
+     * https://developers.cloudflare.com/workers/configuration/secrets/
+     */
+    "vars": {
+        "JWT_SECRET": "111111111",
+    },
+    /**
+     * Service Bindings (communicate between multiple Workers)
+     * https://developers.cloudflare.com/workers/wrangler/configuration/#service-bindings
+     */
+    "hyperdrive": [
+        {
+            "binding": "HYPERDRIVE",
+            "id": "7517481cdc2a4d12975669d20e7f138e",
+            "localConnectionString": "postgresql://passgenix:Asd12345@localhost:5432/your-db-name",
+        },
+    ],
+    // "durable_objects": {
+    //   "bindings": [
+    //     {
+    //       "name": "CounterAgent",
+    //       "class_name": "CounterAgent",
+    //     },
+    //   ],
+    // },
+}
