@@ -177,12 +177,15 @@ Database exceptions are mapped centrally:
 3. Implement schema, DTOs, repository, service, routes, controller, module.
 4. Integrate module in `src/api-app.ts`.
 5. Generate and apply migrations when schema changes:
-    - `npm run db:generate`
-    - `npm run db:migrate`
+    - `pnpm db:generate`
+    - `pnpm db:migrate`
 6. Run formatting checks:
     - `node_modules/.bin/prettier --check --ignore-unknown <changed-files>`
 7. Run type check when available:
     - `node_modules/.bin/tsc --noEmit` (or project-specific equivalent)
+8. Run tests for changed module(s):
+    - `pnpm test:run`
+    - `pnpm test:coverage`
 
 ## 14. Reference Implementation
 
@@ -231,8 +234,8 @@ Use this sequence for each new entity/module:
 9. Integrate module eighth:
     - Import module into `src/api-app.ts` and call `.integrate(apiApp)`.
 10. Finalize with migrations and checks:
-    - `npm run db:generate --name <descriptive-name>`
-    - `npm run db:migrate`
+    - `pnpm db:generate --name <descriptive-name>`
+    - `pnpm db:migrate`
 
 ## 16. Module CRUD Template
 
@@ -579,3 +582,152 @@ Validate these cases after implementation:
 6. `PATCH /api/<modules>/{id}` with empty body returns `422`.
 7. `DELETE /api/<modules>/{id}` succeeds once; repeated delete returns `404`.
 8. OpenAPI `/` shows the module tag and all CRUD endpoints.
+
+## 18. How to Write Test Cases (Vitest)
+
+This repository uses `vitest` with `@cloudflare/vitest-pool-workers`.
+
+### 18.1 Test Folder Convention
+
+Use these locations to keep tests easy to discover:
+
+```text
+tests/
+├── helpers/
+│   └── factories.ts
+├── unit/
+│   ├── modules/<module>/<module>.service.test.ts
+│   ├── modules/<module>/<module>.controller.test.ts
+│   └── core/middlewares/<middleware>.test.ts
+└── integration/
+    └── api/<module>.crud.test.ts
+```
+
+### 18.2 Test Pyramid for This Architecture
+
+Prioritize tests in this order:
+
+1. Service unit tests (primary): verify business rules, ownership rules, and exception mapping.
+2. Middleware unit tests: verify auth guards and error formatting behavior.
+3. API integration tests: verify request validation, route wiring, and response contract.
+
+### 18.3 Service Unit Test Pattern (Recommended)
+
+Use repository mocks and test only service behavior.
+
+```ts
+import { ERROR_CODES } from "@/core/config/error-codes.config";
+import { NotFoundException } from "@/core/exception/base.exception";
+import { EntityService } from "@/modules/<module>/<module>.service";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const createRepositoryMock = () => ({
+    findById: vi.fn(),
+    findAll: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+});
+
+const createService = (repository = createRepositoryMock()) => {
+    const service = new EntityService({} as any, repository as any);
+    return { service, repository };
+};
+
+describe("EntityService", () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
+
+    it("throws NotFoundException when entity does not exist", async () => {
+        const { service, repository } = createService();
+        repository.findById.mockResolvedValue(undefined);
+
+        await expect(service.getById("missing-id")).rejects.toBeInstanceOf(NotFoundException);
+        await expect(service.getById("missing-id")).rejects.toMatchObject({
+            errorCode: ERROR_CODES.ENTITY_NOT_FOUND.code,
+        });
+    });
+});
+```
+
+### 18.4 Middleware Unit Test Pattern
+
+Build a minimal mock context for middleware and assert status/message shape.
+
+```ts
+const c = {
+    json: vi.fn((payload, status) => new Response(JSON.stringify(payload), { status })),
+    get: vi.fn(),
+} as any;
+```
+
+For auth middleware, verify:
+
+1. Missing `user` -> `ForbiddenException`.
+2. Role not allowed -> `ForbiddenException`.
+3. Allowed role -> `next()` is called exactly once.
+
+### 18.5 API Integration Test Pattern
+
+Use `SELF.fetch(...)` from `cloudflare:test` to exercise real route wiring.
+
+```ts
+import { SELF } from "cloudflare:test";
+import { describe, expect, it } from "vitest";
+
+describe("Entity API", () => {
+    it("returns wrapped success response", async () => {
+        const res = await SELF.fetch("http://example.com/api/<modules>", {
+            method: "GET",
+        });
+
+        expect(res.status).toBe(200);
+
+        const body = await res.json();
+        expect(body).toEqual(
+            expect.objectContaining({
+                statusCode: 200,
+                message: "OK",
+            })
+        );
+    });
+});
+```
+
+For protected endpoints, obtain a token from auth endpoints during test setup instead of hardcoding JWTs.
+
+### 18.6 Assertion Rules (What to Verify)
+
+For each test case, assert all of these when applicable:
+
+1. HTTP status code.
+2. Response contract (`statusCode`, `message`, `data`).
+3. Domain-specific `errorCode` for failures.
+4. Side effects (repository calls, update/delete invocation counts).
+
+### 18.7 Minimum Cases Per New CRUD Module
+
+At minimum, write tests for:
+
+1. `create` success and invalid payload (`422`).
+2. `getAll` success.
+3. `getById` not found (`404`).
+4. `update` success and empty payload (`422` when applicable).
+5. `delete` success and repeated delete (`404`).
+6. Authorization checks for protected routes (`403`/`401` depending on contract).
+
+### 18.8 Test Execution Commands
+
+Use the project scripts:
+
+```bash
+pnpm test:run
+pnpm test:coverage
+```
+
+Run a single file when iterating:
+
+```bash
+pnpm test:run -- tests/unit/modules/<module>/<module>.service.test.ts
+```

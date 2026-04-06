@@ -48,7 +48,7 @@ src/
 ## Prerequisites
 
 - Node.js 20+
-- Corepack enabled (for Yarn 4)
+- Corepack enabled (for pnpm)
 - PostgreSQL instance for local development
 - Cloudflare account (for deployment)
 
@@ -56,7 +56,7 @@ src/
 
 ```bash
 corepack enable
-yarn install
+pnpm install
 # Optional (for local overrides/tooling)
 cp .env.example .env
 ```
@@ -102,13 +102,13 @@ Drizzle reads the local DB connection from `wrangler.jsonc` (`HYPERDRIVE.localCo
 
 ```bash
 # Generate new migration files from schema changes
-yarn db:generate
+pnpm db:generate
 
 # Apply migrations
-yarn db:migrate
+pnpm db:migrate
 
 # Open Drizzle Studio
-yarn db:studio
+pnpm db:studio
 ```
 
 Current schema includes:
@@ -120,7 +120,7 @@ Current schema includes:
 ## Run Locally
 
 ```bash
-yarn dev
+pnpm dev
 ```
 
 Default local URL: `http://localhost:8787`
@@ -195,14 +195,16 @@ Application/database errors:
 
 ## Available Scripts
 
-- `yarn dev`: run Worker locally with Wrangler
-- `yarn deploy`: deploy Worker (`--minify`)
-- `yarn cf-typegen`: regenerate Cloudflare binding types
-- `yarn db:generate`: generate Drizzle migration files
-- `yarn db:migrate`: apply migrations
-- `yarn db:studio`: open Drizzle Studio
-- `yarn format`: format repository with Prettier
-- `yarn commitlint`: lint commit message
+- `pnpm dev`: run Worker locally with Wrangler
+- `pnpm test:run`: run tests once with Vitest
+- `pnpm test:coverage`: run tests with coverage report
+- `pnpm deploy`: deploy Worker (`--minify`)
+- `pnpm cf-typegen`: regenerate Cloudflare binding types
+- `pnpm db:generate`: generate Drizzle migration files
+- `pnpm db:migrate`: apply migrations
+- `pnpm db:studio`: open Drizzle Studio
+- `pnpm format`: format repository with Prettier
+- `pnpm prepare`: install simple-git-hooks
 
 ## Deployment
 
@@ -216,11 +218,11 @@ wrangler secret put JWT_SECRET
 3. Deploy:
 
 ```bash
-yarn deploy
+pnpm deploy
 ```
 
 ## Notes
 
 - Path aliases are configured in `tsconfig.json` (for example `@/`, `@core/`, `@modules/`).
-- If bindings change in `wrangler.jsonc`, rerun `yarn cf-typegen`.
-- No automated test script is currently defined.
+- If bindings change in `wrangler.jsonc`, rerun `pnpm cf-typegen`.
+- Test commands: `pnpm test:run` and `pnpm test:coverage`.
