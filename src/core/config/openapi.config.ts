@@ -25,5 +25,5 @@ export function registerOpenAPI(
     });
 
     // Swagger UI
-    app.get("/", swaggerUI({ url: "/openapi.json", title: "Platform API Docs" }));
+    app.get("/docs", swaggerUI({ url: "/openapi.json", title: "Platform API Docs" }));
 }

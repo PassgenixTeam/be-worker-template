@@ -11,4 +11,7 @@ registerOpenAPI(app);
 // Mount API app
 app.route("/api", apiApp);
 
+// Redirect root to docs
+app.get("/", (c) => c.redirect("/docs"));
+
 export default app;

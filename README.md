@@ -125,7 +125,7 @@ pnpm dev
 
 Default local URL: `http://localhost:8787`
 
-- Swagger UI: `/`
+- Swagger UI: `/docs`
 - OpenAPI JSON: `/openapi.json`
 - API base path: `/api`
 

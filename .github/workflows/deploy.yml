@@ -1,0 +1,39 @@
+name: Deploy Worker
+
+on:
+    push:
+        branches:
+            - master
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        name: Test, Migrate & Deploy
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "22"
+
+            - name: Setup pnpm
+              run: corepack enable pnpm
+
+            - name: Install Dependencies
+              run: pnpm install
+
+            - name: Run Tests
+              run: pnpm test:run
+
+            - name: Run Database Migrations
+              run: pnpm db:migrate
+              env:
+                  DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+
+            - name: Deploy to Cloudflare Workers
+              uses: cloudflare/wrangler-action@v3
+              with:
+                  apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+                  accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

@@ -581,7 +581,7 @@ Validate these cases after implementation:
 5. `PATCH /api/<modules>/{id}` with valid partial payload returns updated entity.
 6. `PATCH /api/<modules>/{id}` with empty body returns `422`.
 7. `DELETE /api/<modules>/{id}` succeeds once; repeated delete returns `404`.
-8. OpenAPI `/` shows the module tag and all CRUD endpoints.
+8. OpenAPI `/docs` shows the module tag and all CRUD endpoints.
 
 ## 18. How to Write Test Cases (Vitest)
 
