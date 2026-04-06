@@ -208,18 +208,27 @@ Application/database errors:
 
 ## Deployment
 
-1. Ensure production bindings/secrets are configured in Cloudflare.
-2. Set secret values as needed (example):
+### Manual Deployment
 
-```bash
-wrangler secret put JWT_SECRET
-```
-
-3. Deploy:
+1. Configure production bindings/secrets in `.env` or directly in Cloudflare.
+2. Run:
 
 ```bash
 pnpm deploy
 ```
+
+### GitHub Actions Deployment
+
+1. Ensure production bindings/secrets are configured in Cloudflare.
+2. Set these secret values in Github Actions for deployment:
+
+See how to get Cloudflare API token and account ID in the [Cloudflare docs](https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions).
+
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_API_TOKEN`
+- `DB_CONNECTION_STRING`
+
+3. Push to `main` branch to trigger deployment workflow.
 
 ## Notes
 
